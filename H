@@ -1,0 +1,89 @@
+import random
+import time
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.health = 100
+        self.location = "Beach"
+        self.vehicles = ["Boat"]
+        self.enemies = {
+            "Jungle": ["Pirate", "Skeleton"],
+            "Cave": ["Giant Spider", "Tribesman"],
+            "Ship": ["Captain Blackbeard"]
+        }
+    
+    def move(self, new_location):
+        if new_location.capitalize() in self.enemies:
+            print("You cannot go directly to locations with enemies!")
+            return
+        
+        if new_location.capitalize() in ["Beach", "Jungle", "Cave", "Ship"]:
+            self.location = new_location.capitalize()
+            print(f"You move to {self.location}.")
+        elif new_location.capitalize() in self.vehicles:
+            self.location = new_location.capitalize()
+            print(f"You use your {self.location} to travel.")
+        else:
+            print("Invalid location or vehicle!")
+    
+    def attack(self, enemy):
+        damage = random.randint(10, 20)
+        enemy_health = enemy.take_damage(damage)
+        print(f"{self.name} attacks {enemy.name} for {damage} damage!")
+        if enemy_health <= 0:
+            print(f"{enemy.name} defeated!")
+            return True
+        else:
+            print(f"{enemy.name} health: {enemy_health}")
+            return False
+
+class Enemy:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+    
+    def take_damage(self, damage):
+        self.health -= damage
+        return self.health
+
+def main():
+    player_name = input("Enter your name: ")
+    player = Player(player_name)
+    print(f"Welcome to the Caribbean, {player.name}!")
+    print("You find yourself on a beautiful beach, but danger lurks in the jungle, caves, and on the high seas.")
+    print("Navigate wisely and defeat your enemies to become the greatest pirate!")
+    
+    while True:
+        print("\nCurrent Location:", player.location)
+        if player.location == "Beach":
+            print("You can go to: Jungle, Cave, Ship")
+        elif player.location == "Jungle":
+            print("You can go to: Beach")
+        elif player.location == "Cave":
+            print("You can go to: Beach")
+        elif player.location == "Ship":
+            print("You can go to: Beach")
+        
+        choice = input("Enter your choice: ").lower()
+        player.move(choice)
+        if choice in ["jungle", "cave", "ship"]:
+            if player.location in player.enemies:
+                enemy_name = random.choice(player.enemies[player.location])
+                enemy = Enemy(enemy_name, 50)  # Assume enemy health is 50 for simplicity
+                print(f"A wild {enemy_name} appears!")
+                while True:
+                    action = input("Do you want to attack? (yes/no): ").lower()
+                    if action == "yes":
+                        if player.attack(enemy):
+                            break  # Enemy defeated, break out of the combat loop
+                        else:
+                            time.sleep(1)  # Add some delay for dramatic effect
+                    elif action == "no":
+                        print("You flee from battle!")
+                        break
+                    else:
+                        print("Invalid choice!")
+
+if __name__ == "__main__":
+    main()
